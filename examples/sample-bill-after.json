@@ -1,0 +1,40 @@
+{
+  "_comment": "对比期样例 —— 假设做了上下文裁剪（W3）与隐藏调用收敛（W9）之后，同样 11,503 次请求的账单。用于验证 compare.mjs：请求数不变、单请求上下文从 17.8 万降到 12.2 万、总成本降约 35%。",
+  "meta": {
+    "currency": "CNY",
+    "period": "2026-11",
+    "source": "示例数据（非实测）",
+    "evidence": "未核实"
+  },
+  "models": {
+    "deepseek-flash": {
+      "inputCachedTokens": 1340000000,
+      "inputUncachedTokens": 44000000,
+      "outputTokens": 14200000,
+      "requestCount": 11503,
+      "peak": false,
+      "retryCount": 210,
+      "retryBreakdown": {
+        "quotaExceeded429": 180,
+        "other": 30
+      }
+    }
+  },
+  "totalCost": 486.5,
+  "assumptions": {
+    "contextTrimRatio": 0.086,
+    "offlineCostShare": 0.0,
+    "batchDiscount": 0.5,
+    "untaggedCostRatio": 0.0,
+    "hiddenCallCount": 1980,
+    "hiddenCallUnitPrice": 0.005,
+    "preambleChars": 11545,
+    "callsPerTask": 31,
+    "customerDupRate": null,
+    "gpuHourlyPrice": null,
+    "utilization": null,
+    "tagCoverage": 0.0,
+    "peakTokenRatio": 0.181,
+    "shadowEval": null
+  }
+}

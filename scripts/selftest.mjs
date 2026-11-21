@@ -16,8 +16,9 @@ import { fileURLToPath } from 'node:url';
 import { estimate } from '../lib/estimate.mjs';
 import { WASTE_ITEMS, AVOID_ITEMS, getItem, VERDICT } from '../lib/matrix.mjs';
 import { ADAPTERS, adaptGeneric } from '../lib/ingest.mjs';
-import { listModels, unitPriceWith } from '../lib/prices.mjs';
+import { listModels, unitPriceWith, listPrices, resolveKey, unitPrice } from '../lib/prices.mjs';
 import { renderHtml } from '../lib/render-html.mjs';
+import { compare } from '../lib/compare.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -151,6 +152,46 @@ check('HTML 转义用户输入', () => {
   return 'period 里的标签被实体化';
 });
 
+
+check('价格表覆盖国内主流厂商', () => {
+  const rows = listPrices();
+  if (rows.length < 12) throw new Error('只有 ' + rows.length + ' 个模型');
+  const need = ['deepseek-flash', 'qwen3.8-max', 'glm-5.3', 'minimax-m3', 'hunyuan-a13b'];
+  for (const k of need) if (!rows.some((r) => r.key === k)) throw new Error('缺 ' + k);
+  for (const r of rows) if (!r.source || !r.capturedAt) throw new Error(r.key + ' 缺来源或日期');
+  return rows.length + ' 个模型，全部带来源与抓取日期';
+});
+
+check('模型名归一化能吃下真实账单写法', () => {
+  const cases = [['Qwen3.8-Max', 'qwen3.8-max'], ['GLM-5.3', 'glm-5.3'], ['deepseek-chat', 'deepseek-flash']];
+  for (const [input, want] of cases) {
+    const got = resolveKey(input);
+    if (got !== want) throw new Error(input + ' → ' + got + '，期望 ' + want);
+  }
+  return cases.length + ' 种写法';
+});
+
+check('未知模型查价返回 null 而不是 0', () => {
+  if (unitPrice('绝不存在的模型', 'output') !== null) throw new Error('应为 null');
+  return 'null';
+});
+
+check('两期对比能算出已实现节省', () => {
+  const after = JSON.parse(fs.readFileSync(new URL('../examples/sample-bill-after.json', import.meta.url), 'utf8'));
+  const r = compare(sample, after);
+  if (!Number.isFinite(r.realizedSaving)) throw new Error('realizedSaving 不是数');
+  if (r.realizedSaving <= 0) throw new Error('应为正数');
+  if (!r.caveats.some((c) => c.includes('不是 A/B 对照'))) throw new Error('缺免责');
+  return Math.round(r.realizedSaving) + " 元，带 " + r.caveats.length + " 条注意";
+});
+
+check('请求数不变时单位成本变化 = 总成本变化', () => {
+  const after = JSON.parse(fs.readFileSync(new URL('../examples/sample-bill-after.json', import.meta.url), 'utf8'));
+  const r = compare(sample, after);
+  const gap = Math.abs(r.delta.totalCostPct - r.delta.costPer1kRequestsPct);
+  if (gap > 0.01) throw new Error('相差 ' + gap);
+  return '一致';
+});
 console.log('='.repeat(60));
 console.log(failed ? `失败 ${failed} 项` : '全部通过');
 process.exit(failed ? 1 : 0);

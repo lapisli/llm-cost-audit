@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url';
 import { estimate } from '../lib/estimate.mjs';
 import { renderHtml } from '../lib/render-html.mjs';
 import { WASTE_ITEMS, EVIDENCE, VERDICT } from '../lib/matrix.mjs';
+import { listPrices, applyPriceOverrides } from '../lib/prices.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -28,6 +29,9 @@ function parseArgs(argv) {
     if (a === '--format') args.format = argv[++i];
     else if (a === '--out') args.out = argv[++i];
     else if (a === '--list') args.list = true;
+    else if (a === '--list-prices') args.listPrices = true;
+    else if (a === '--prices') args.prices = argv[++i];
+    else if (a === '--client') args.client = argv[++i];
     else if (a === '--help' || a === '-h') args.help = true;
     else if (a.startsWith('--')) args[a.slice(2)] = true;
     else args._.push(a);
@@ -187,10 +191,40 @@ function main() {
     return;
   }
 
+  // --prices 外部价格表（必须在 --list-prices 之前，否则看不到覆盖）
+  if (args.prices) {
+    try {
+      const txt = fs.readFileSync(path.resolve(args.prices), 'utf8');
+      const n = applyPriceOverrides(JSON.parse(txt));
+      console.error(`已加载外部价格表：${args.prices}（${n.length} 个模型：${n.join(', ')}）`);
+    } catch (e) {
+      console.error(`价格表加载失败：${e.message}`);
+      process.exit(2);
+    }
+  }
+
+  if (args.listPrices) {
+    const rows = listPrices();
+    console.log('');
+    console.log(`${pad('模型', 24)}${pad('币种', 6)}${pad('输入', 10)}${pad('缓存', 10)}${pad('输出', 10)}${pad('错峰', 6)}${pad('来源', 30)}抓取`);
+    console.log('─'.repeat(112));
+    for (const r of rows) {
+      const f = (v) => (Number.isFinite(v) ? String(v) : '—');
+      console.log(`${pad(r.key + (r.overridden ? ' *' : ''), 24)}${pad(r.currency, 6)}${pad(f(r.inputUncached), 10)}${pad(f(r.inputCached), 10)}${pad(f(r.output), 10)}${pad(r.hasOffPeak ? '是' : '否', 6)}${pad(String(r.source || '').slice(0, 28), 30)}${r.capturedAt || ''}`);
+    }
+    console.log('');
+    console.log(`共 ${rows.length} 个模型。* = 由 --prices 覆盖。`);
+    console.log('价格会过时：用前请核对官方页面，日期见最后一列。');
+    console.log('');
+    return;
+  }
+
   const billPath = args._[0];
   if (!billPath) {
     console.error('用法：node scripts/estimate.mjs <bill.json> [--format text|json|md|html] [--out file]');
     console.error('      node scripts/estimate.mjs --list');
+    console.error('      node scripts/estimate.mjs --list-prices');
+    console.error('      node scripts/estimate.mjs bill.json --prices my-prices.json');
     process.exit(2);
   }
 

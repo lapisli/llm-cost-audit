@@ -2,6 +2,34 @@
 
 所有重要变更记录在此。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.1.0] - 2026-11-22
+
+### 新增
+
+- **价格表扩到 14 个模型** —— 新增阿里百炼 Qwen3.8-Max、智谱 GLM-5.3 三档、MiniMax-M3.1-Flash / M3、腾讯混元三款。全部来自 `reference/09-price-cn.md`，每项带 `source` + `capturedAt`
+- **`--list-prices`** —— 列出价格表，含币种、三档价、是否错峰、来源、抓取日期。价格会过时，日期必须可见
+- **`--prices <file>`** —— 外部价格表覆盖，客户用的模型不在内置表里时用这个。覆盖项默认标「未核实」，不冒充官方
+- **`prices.example.json`** —— 带说明的模板（`_` 开头的字段会被忽略，可当注释用）
+- **模型名归一化** —— `resolveKey()` 三层回落：别名表 → 小写归一 → 去日期后缀。`Qwen3.8-Max`、`deepseek-chat`、`gpt-4o-2024-08-06` 都能匹配
+- **`lib/compare.mjs` + `scripts/compare.mjs`** —— 两期账单对比。核心是「每千次请求成本」而不是总成本差额，并用基期用量折算已实现节省
+- **`examples/sample-bill-after.json`** —— 对比期样例，用来验证 compare
+- **测试 60 → 97 项**（新增 prices 20 项、compare 17 项）；验收 16 → 21 项
+
+### 变更
+
+- `--list-prices` 的 `--prices` 加载移到前面，否则看不到覆盖标记
+- `compare` 的中文列对齐按显示宽度算（中文占 2 格），不再用 `padEnd`
+
+### 修复
+
+- `compare` 读不到总成本：账单格式里 `totalCost` 在顶层，不在 `meta` 里
+- 缓存命中率被 `fmtPct` 加了正号——那是绝对值不是变化率
+
+### 已知局限
+
+- 内置价格只覆盖国内主流 + Claude 系列，OpenAI / Gemini 需用 `--prices` 自己填
+- `compare` 不是 A/B 对照，业务结构变化会污染结论；要证因果必须留对照组
+
 ## [2.0.0] - 2026-11-22
 
 首个可分发版本。从「个人自用脚本集合」重写为「跨客户端 Agent Skill + CLI 工具」。

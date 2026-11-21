@@ -3,7 +3,7 @@
 **把 LLM 账单跑成一张可复核的浪费清单 —— 18 项判据，出金额，出证据等级，并且明确告诉你哪些不建议做。**
 
 [![CI](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml)
-[![tests](https://img.shields.io/badge/tests-60%20passing-brightgreen)]()
+[![tests](https://img.shields.io/badge/tests-97%20passing-brightgreen)]()
 [![license](https://img.shields.io/badge/license-MIT-blue)]()
 
 ---
@@ -89,10 +89,16 @@ node scripts/estimate.mjs --list
 # 用内置示例跑一遍（数据来自一次真实自审）
 node scripts/estimate.mjs examples/sample-bill.json
 
-# 跑测试（60 项）
+# 看价格表（14 个模型，带来源和抓取日期）
+node scripts/estimate.mjs --list-prices
+
+# 两期账单对比（算出真实省了多少）
+node scripts/compare.mjs examples/sample-bill.json examples/sample-bill-after.json
+
+# 跑测试（97 项）
 npm test
 
-# 端到端验收（18 项矩阵 + 三条纪律实测）
+# 端到端验收（21 项）
 npm run selftest
 ```
 
@@ -209,23 +215,93 @@ llm-cost-audit/
 │   ├── prices.mjs        价格表 + 错峰判定 + 内联价回落
 │   ├── estimate.mjs      计算器核心
 │   ├── ingest.mjs        账单适配纯函数
-│   └── render-html.mjs   自包含 HTML 报告
+│   ├── render-html.mjs   自包含 HTML 报告
+│   └── compare.mjs       两期账单对比
 ├── scripts/
 │   ├── estimate.mjs      CLI（text / json / md）
 │   ├── ingest.mjs        四路账单适配 CLI
+│   ├── compare.mjs       两期对比 CLI
 │   ├── verify.mjs        分发自检（装完跑这个）
 │   └── selftest.mjs      端到端验收（CI 用）
 ├── tests/
 │   ├── estimate.test.mjs 26 项（计算器纪律）
 │   ├── ingest.test.mjs   22 项（四路适配 + 金额解析）
-│   └── render-html.test.mjs 12 项（自包含 + 转义 + 打印）
+│   ├── render-html.test.mjs 12 项（自包含 + 转义 + 打印）
+│   ├── prices.test.mjs   20 项（归一化 + 覆盖 + 来源完整性）
+│   └── compare.test.mjs  17 项（单位成本 + 用量剔除 + 对齐）
 ├── reference/            12 份带来源的知识库
 ├── templates/            报告模板 / Intake 邮件 / 结案模板
 ├── adapters/dsh/         某个平台的账本适配（参考实现，非通用）
+├── prices.example.json  外部价格表模板（--prices 用）
 └── examples/
     ├── sample-bill.json  可直接跑的示例账单
+    ├── sample-bill-after.json  对比期账单（compare 用）
     └── usage.csv         CSV 适配示例
 ```
+
+---
+
+## 价格表怎么维护
+
+内置 14 个模型，每个都带 `source` 和 `capturedAt`：
+
+```bash
+node scripts/estimate.mjs --list-prices
+```
+
+**价格一定会过时。** 用前核对最后一列那个日期，对不上就去官方页面确认。表里只收「有可引用来源」的价格，宁可留空判「待核实」，也不编一个数。
+
+你用的模型不在表里，有两种办法：
+
+**① 账单里内联价格**（最省事，推荐）
+
+```json
+{
+  "models": { "your-model": { "inputUncachedTokens": 1000000, "outputTokens": 100000 } },
+  "prices": { "your-model": { "inputUncached": 3, "inputCached": 0.6, "output": 6 } }
+}
+```
+
+**② 外部价格表**
+
+```bash
+cp prices.example.json my-prices.json   # 照着填
+node scripts/estimate.mjs bill.json --prices my-prices.json
+```
+
+外部表里的项默认标 `未核实`，不会冒充官方价格。模型名会自动归一化——`Qwen3.8-Max`、`qwen3.8-max`、`qwen-max` 都能匹配上；`gpt-4o-2024-08-06` 这种带日期后缀的也能识别。
+
+---
+
+## 两期对比：算出真实省了多少
+
+单期账单证明不了因果，所以 `estimate()` 的 `realizedTotal` 永远是 `null`。做完优化、下个月拿到新账单，用 `compare` 才能给出一个**更强但仍不完美**的证据：
+
+```bash
+node scripts/compare.mjs before.json after.json
+```
+
+```
+指标                基线期            对比期            变化
+总成本              ¥751.50           ¥486.50           -35.26%
+请求数              11503             11503             0.00%
+每千次请求成本      ¥65.33            ¥42.29            -35.26%
+每百万 token 成本   ¥0.37             ¥0.35             -5.07%
+缓存命中率          96.80%            96.82%            +0.02%
+单请求平均上下文    178,250           121,551           -31.81%
+
+剔除用量变化后的已实现节省：¥265.00
+```
+
+**关键在第三行。** 总成本降了 35%，但如果请求数也降了 35%，那就不是优化、是业务缩水。所以它算的是「每千次请求成本」，并且用基期用量折算：
+
+```
+已实现节省 = (基期单位成本 − 对比期单位成本) ÷ 1000 × 基期请求数
+```
+
+用量变化超过 10% 时它会主动报警，提醒你「差额里有相当部分是业务量变化，不能全部归因于降本动作」。币种不同、周期相同、上下文剧变都会触发对应的 caveat。
+
+**它自己会说「这不是 A/B 对照」**——同期业务结构、模型换代、厂商调价都会污染结论。要证因果，得留对照组。这句话永远出现在输出末尾，删不掉。
 
 ---
 

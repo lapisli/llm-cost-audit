@@ -31,13 +31,25 @@ node scripts/estimate.mjs bill.json
 # 3. 出 Markdown 报告片段，套进 templates/report-template.md
 node scripts/estimate.mjs bill.json --format md   --out section4.md
 node scripts/estimate.mjs bill.json --format html --out report.html --client "客户名"
+
+# 看价格表（14 个模型，每个带来源与抓取日期）
+node scripts/estimate.mjs --list-prices
+
+# 客户模型不在表里：外部价格表覆盖
+node scripts/estimate.mjs bill.json --prices my-prices.json
+
+# 两期对比：算出真实省了多少（剔除用量变化）
+node scripts/compare.mjs before.json after.json
 ```
 
 没有账单也能先看矩阵长什么样：`node scripts/estimate.mjs --list`
 
 **计算器不是可选项。** 先跑数，再写报告。凭感觉估的数字，客户一核对就崩。
 
-## 硬约束（不可协商，先读这一节）
+## 硬约束
+
+- **compare 只报剔除用量后的数。** 总成本差额里混着业务量变化，直接报「省了 35%」会被客户当场问倒。一律以「每千次请求成本」为准，且必须带上 `caveats`。
+- **价格表可以覆盖，但覆盖项标「未核实」。** 用户自己填的价格不冒充官方，相关结论只能当提示。（不可协商，先读这一节）
 
 1. **禁止编造**：客户名、评价、logo、案例、省费率、百分比、URL —— 一律不许编。抓不到就写「抓取失败 / 未核实」。
 2. **两个节省数字必须分开报**：「已识别节省」（动手前的估算）和「已验证节省」（对账后）。**绝不许合并成一个数字。**
@@ -107,9 +119,11 @@ lib/prices.mjs     价格表 + 错峰判定 + 账单内联价格回落
 lib/estimate.mjs   计算器核心（三条纪律在这里执行）
 lib/ingest.mjs     账单适配纯函数（OpenAI / Anthropic / LiteLLM / 通用 CSV）
 lib/render-html.mjs 自包含 HTML 报告（无 CDN、可打印、自动转义）
-scripts/estimate.mjs   CLI：text / json / md 三种输出
+lib/compare.mjs     两期账单对比（单位成本 + 用量剔除 + caveats）
+scripts/estimate.mjs   CLI：text / json / md / html 四种输出
 scripts/ingest.mjs     四路适配：OpenAI / Anthropic / LiteLLM / 通用 CSV
-tests/                 60 项单测（estimate 26 + ingest 22 + html 12）
+scripts/compare.mjs    两期对比 CLI
+tests/                 97 项单测（estimate 26 + ingest 22 + html 12 + prices 20 + compare 17）
 ```
 
 **价格表只收录有可引用来源的价格。** 遇到没收录的模型，两个选择：

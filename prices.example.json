@@ -1,0 +1,45 @@
+{
+  "_说明": "复制这个文件成 my-prices.json，填上你在用的模型价格，然后用 node scripts/estimate.mjs bill.json --prices my-prices.json 加载。以 _ 开头的字段会被忽略，可以当注释用。",
+  "_单位": "所有价格都是「每百万 tokens」，币种由 currency 决定（CNY 或 USD）。不要混用两种币种。",
+  "_三个价必须分开填": "input.uncached = 输入未命中缓存；input.cached = 输入命中缓存；input.cacheWrite = 缓存写入（只有部分厂商收）；output = 输出。合并成一个「输入价」就是审计事故的起点。",
+  "_不知道就留空": "拿不到官方价就不要瞎填。留空的话，相关浪费项会判「待核实」，不会算出一个假的钱。",
+
+  "gpt-4o": {
+    "displayName": "GPT-4o",
+    "currency": "USD",
+    "input": {
+      "uncached": 2.5,
+      "cached": 1.25
+    },
+    "output": 10,
+    "source": "https://openai.com/api/pricing/",
+    "capturedAt": "2026-11-22",
+    "evidence": "未核实"
+  },
+
+  "gemini-2.5-pro": {
+    "displayName": "Gemini 2.5 Pro",
+    "currency": "USD",
+    "input": {
+      "uncached": 1.25,
+      "cached": 0.31
+    },
+    "output": 10,
+    "source": "https://ai.google.dev/pricing",
+    "capturedAt": "2026-11-22",
+    "evidence": "未核实"
+  },
+
+  "kimi-k3": {
+    "displayName": "Kimi K3",
+    "currency": "CNY",
+    "input": {
+      "uncached": 4,
+      "cached": 1
+    },
+    "output": 16,
+    "source": "https://platform.moonshot.cn/docs/pricing",
+    "capturedAt": "2026-11-22",
+    "evidence": "未核实"
+  }
+}
