@@ -1,9 +1,9 @@
 ---
 name: llm-cost-audit
-description: 执行 LLM/AI 成本审计与降本落地。当任务涉及 API 账单、token 成本、上下文膨胀、prompt 缓存、模型路由、批处理定价、成本归因，或要给客户出一份成本审计报告时使用。也用于写/审成本报告、设计基线与对账、判断某项降本建议值不值得做。
-whenToUse: 接到成本审计的单、要给自己或客户降 LLM 成本、要出成本审计报告、要评估某个降本手段的真实收益时。
+description: 执行 LLM/AI 成本审计与降本落地（LLM cost audit / FinOps）。当任务涉及 API 账单分析、token 成本过高、上下文膨胀、prompt 缓存命中、模型路由降级、批处理定价、成本归因与分账，或要给客户出一份成本审计报告时使用。也用于写/审成本报告、设计基线与两期对账、判断某项降本建议值不值得做。Use for API bill analysis, runaway token cost, context bloat, prompt caching, model routing, batch pricing, cost attribution, or writing a cost audit report.
+whenToUse: 接到成本审计的单、要给自己或客户降 LLM 成本、要出成本审计报告、要评估某个降本手段的真实收益、要看两期账单到底省了多少时。
 license: MIT
-version: 2.0.0
+version: 2.1.0
 ---
 
 # LLM 成本审计与降本
@@ -45,6 +45,12 @@ node scripts/compare.mjs before.json after.json
 没有账单也能先看矩阵长什么样：`node scripts/estimate.mjs --list`
 
 **计算器不是可选项。** 先跑数，再写报告。凭感觉估的数字，客户一核对就崩。
+
+## 模板与工具的分工
+
+`templates/report-template.md` 是**手工路径**（客户现场不能装 Node、或要复核工具输出时用）。
+能跑代码就用 `scripts/estimate.mjs --format html`，两条路径结论必须一致。
+模板里的「不建议做」区块**不许删**——删了报告就退化成一份只会说「你能省」的推销材料。
 
 ## 硬约束
 
