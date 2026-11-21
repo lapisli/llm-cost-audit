@@ -41,6 +41,7 @@
   ],
   "scripts": {
     "test": "node --test tests/estimate.test.mjs tests/ingest.test.mjs",
+    "selftest": "node scripts/selftest.mjs",
     "verify": "node scripts/verify.mjs",
     "demo": "node scripts/estimate.mjs examples/sample-bill.json",
     "list": "node scripts/estimate.mjs --list"

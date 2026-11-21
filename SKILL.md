@@ -104,9 +104,10 @@ node scripts/estimate.mjs bill.json --format md --out section4.md
 lib/matrix.mjs     18 项矩阵的数据结构（evidence / verdict / kind / scope 四维）
 lib/prices.mjs     价格表 + 错峰判定 + 账单内联价格回落
 lib/estimate.mjs   计算器核心（三条纪律在这里执行）
+lib/ingest.mjs     账单适配纯函数（OpenAI / Anthropic / LiteLLM / 通用 CSV）
 scripts/estimate.mjs   CLI：text / json / md 三种输出
 scripts/ingest.mjs     四路适配：OpenAI / Anthropic / LiteLLM / 通用 CSV
-tests/                 26 项单测
+tests/                 48 项单测（estimate 26 + ingest 22）
 ```
 
 **价格表只收录有可引用来源的价格。** 遇到没收录的模型，两个选择：

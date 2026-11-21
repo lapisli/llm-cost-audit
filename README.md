@@ -2,7 +2,9 @@
 
 **把 LLM 账单跑成一张可复核的浪费清单 —— 18 项判据，出金额，出证据等级，并且明确告诉你哪些不建议做。**
 
-[![tests](https://img.shields.io/badge/tests-26%20passing-brightgreen)]() [![license](https://img.shields.io/badge/license-MIT-blue)]()
+[![CI](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml)
+[![tests](https://img.shields.io/badge/tests-48%20passing-brightgreen)]()
+[![license](https://img.shields.io/badge/license-MIT-blue)]()
 
 ---
 
@@ -87,8 +89,11 @@ node scripts/estimate.mjs --list
 # 用内置示例跑一遍（数据来自一次真实自审）
 node scripts/estimate.mjs examples/sample-bill.json
 
-# 跑测试
-node --test tests/estimate.test.mjs
+# 跑测试（48 项）
+npm test
+
+# 端到端验收（18 项矩阵 + 三条纪律实测）
+npm run selftest
 ```
 
 ### 输入格式
@@ -202,13 +207,16 @@ llm-cost-audit/
 ├── lib/
 │   ├── matrix.mjs        18 项矩阵数据结构
 │   ├── prices.mjs        价格表 + 错峰判定 + 内联价回落
-│   └── estimate.mjs      计算器核心
+│   ├── estimate.mjs      计算器核心
+│   └── ingest.mjs        账单适配纯函数
 ├── scripts/
 │   ├── estimate.mjs      CLI（text / json / md）
-│   ├── ingest.mjs        四路账单适配
-│   └── verify.mjs        分发自检（装完跑这个）
+│   ├── ingest.mjs        四路账单适配 CLI
+│   ├── verify.mjs        分发自检（装完跑这个）
+│   └── selftest.mjs      端到端验收（CI 用）
 ├── tests/
-│   └── estimate.test.mjs 26 项单测
+│   ├── estimate.test.mjs 26 项（计算器纪律）
+│   └── ingest.test.mjs   22 项（四路适配 + 金额解析）
 ├── reference/            12 份带来源的知识库
 ├── templates/            报告模板 / Intake 邮件 / 结案模板
 ├── adapters/dsh/         某个平台的账本适配（参考实现，非通用）

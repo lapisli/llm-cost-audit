@@ -80,9 +80,21 @@ function checkReferences() {
   else ok('SKILL.md 引用的文件都存在', `${candidates.size} 个引用`);
 }
 
+// ── 2b. matrix.mjs 里的 doc 路径 ──────────────────
+function checkMatrixDocs() {
+  const p = path.join(ROOT, 'lib', 'matrix.mjs');
+  if (!fs.existsSync(p)) return;
+  const txt = fs.readFileSync(p, 'utf8');
+  const docs = [...txt.matchAll(/doc:\s*'([^']+)'/g)].map((m) => m[1]);
+  const uniq = [...new Set(docs)];
+  if (!uniq.length) return warn('matrix 的 doc 路径', '一项都没找到');
+  const missing = uniq.filter((d) => !fs.existsSync(path.join(ROOT, d)));
+  if (missing.length) fail('matrix 的 doc 路径都存在', `缺失：${missing.join('、')}`);
+  else ok('matrix 的 doc 路径都存在', `${uniq.length} 个文档`);
+}
+
 // ── 3. 语法检查 ──────────────────────────────────
-function checkSyntax() {
-  const dirs = ['lib', 'scripts', 'tests', 'adapters'];
+function checkSyntax() {  const dirs = ['lib', 'scripts', 'tests', 'adapters'];
   const files = [];
   const walk = (d) => {
     const abs = path.join(ROOT, d);
@@ -198,6 +210,7 @@ function showTargets() {
 // ── 主流程 ──────────────────────────────────────
 checkFrontmatter();
 checkReferences();
+checkMatrixDocs();
 checkSyntax();
 checkPackage();
 checkPrivate();
