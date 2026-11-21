@@ -2,6 +2,10 @@
 
 **把 LLM 账单跑成一张可复核的浪费清单 —— 18 项判据，出金额，出证据等级，并且明确告诉你哪些不建议做。**
 
+> **谁该用**：每月 API 账单超过 ¥500 的开发者 / 团队；要给客户出成本审计报告的顾问；以及任何被「AI 成本优化」文章说了一堆手段、却不知道自己该动哪里的人。
+>
+> **谁不用**：账单只有几块钱的，省下来的钱不够你读这份文档的时间。
+
 [![CI](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml)
 [![tests](https://img.shields.io/badge/tests-97%20passing-brightgreen)]()
 [![license](https://img.shields.io/badge/license-MIT-blue)]()
@@ -13,6 +17,14 @@
 你打开 LLM 账单，看到一个数字。然后呢？
 
 大多数「AI 成本优化」资料停在第一步：列一堆手段 —— 缓存、路由、批处理、压缩 —— 却不告诉你**在你这张账单上**哪些真的有钱、能省多少、值不值得动。
+
+| | 大多数「AI 成本优化」资料 | 这个项目 |
+|---|---|---|
+| 给你什么 | 一堆手段清单 | **你这张账单上**哪些真的有钱 |
+| 金额怎么来的 | 「能省 90%」 | 联合反事实算出来，同源组不重复计，总额封顶 |
+| 哪些不该动 | 不提 | 4 项明确写「不建议做」，附理由 |
+| 证据 | 无 | 五级证据（官方 / 论文 / 第三方实测 / 厂商宣传 / 未核实），每个数字标来源 |
+| 已实现节省 | 拿「已识别」冒充 | `null` —— 直到你做了两期对比才给数 |
 
 这个项目把它做成了一个**能跑的计算器**：
 
@@ -77,7 +89,31 @@ LLM 成本审计结果
 
 ## 快速开始
 
-需要 Node.js 18+，无第三方依赖。
+需要 Node.js 18+，**无第三方依赖**。
+
+### 一行体验（不用 clone）
+
+```bash
+npx llm-cost-audit --list
+```
+
+或者全局装：
+
+```bash
+npm i -g llm-cost-audit
+llm-cost-audit --list
+```
+
+装完有四个命令：
+
+| 命令 | 干什么 |
+|---|---|
+| `llm-cost-audit` | 主入口，等同于 `estimate` |
+| `llm-cost-ingest` | 账单归一化（OpenAI / Anthropic / LiteLLM / 通用 CSV） |
+| `llm-cost-estimate` | 跑 18 项判据，出报告 |
+| `llm-cost-compare` | 两期账单对比 |
+
+### 完整用法（本地）
 
 ```bash
 git clone https://github.com/lapisli/llm-cost-audit.git

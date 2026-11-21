@@ -4,7 +4,10 @@
   "description": "把 LLM 账单跑成一张可复核的浪费清单 —— 18 项判据，出金额，出证据等级，并明确告诉你哪些不建议做。",
   "type": "module",
   "license": "MIT",
-  "author": "lapisli",
+  "author": {
+    "name": "lapisli",
+    "url": "https://github.com/lapisli"
+  },
   "keywords": [
     "llm",
     "cost",
@@ -15,12 +18,15 @@
     "agent-skill",
     "claude-skill",
     "prompt-caching",
-    "model-routing"
+    "model-routing",
+    "cost-audit",
+    "llm-cost"
   ],
   "engines": {
     "node": ">=18"
   },
   "bin": {
+    "llm-cost-audit": "scripts/estimate.mjs",
     "llm-cost-estimate": "scripts/estimate.mjs",
     "llm-cost-ingest": "scripts/ingest.mjs",
     "llm-cost-compare": "scripts/compare.mjs"
@@ -28,7 +34,8 @@
   "exports": {
     ".": "./lib/estimate.mjs",
     "./matrix": "./lib/matrix.mjs",
-    "./prices": "./lib/prices.mjs"
+    "./prices": "./lib/prices.mjs",
+    "./compare": "./lib/compare.mjs"
   },
   "files": [
     "SKILL.md",
@@ -38,14 +45,16 @@
     "scripts/",
     "reference/",
     "templates/",
-    "examples/"
+    "examples/",
+    "prices.example.json"
   ],
   "scripts": {
     "test": "node --test tests/estimate.test.mjs tests/ingest.test.mjs tests/render-html.test.mjs tests/prices.test.mjs tests/compare.test.mjs",
     "selftest": "node scripts/selftest.mjs",
     "verify": "node scripts/verify.mjs",
     "demo": "node scripts/estimate.mjs examples/sample-bill.json",
-    "list": "node scripts/estimate.mjs --list"
+    "list": "node scripts/estimate.mjs --list",
+    "prepublishOnly": "npm test && node scripts/verify.mjs"
   },
   "repository": {
     "type": "git",
@@ -54,5 +63,6 @@
   "bugs": {
     "url": "https://github.com/lapisli/llm-cost-audit/issues"
   },
-  "homepage": "https://github.com/lapisli/llm-cost-audit#readme"
+  "homepage": "https://github.com/lapisli/llm-cost-audit#readme",
+  "main": "./lib/estimate.mjs"
 }
