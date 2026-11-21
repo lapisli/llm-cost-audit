@@ -39,7 +39,12 @@ Most "AI cost optimization" content stops at the first step: a list of levers â€
 Requires Node.js 18+. **Zero dependencies.**
 
 ```bash
-# npm package not published yet â€” clone for now
+npx llm-cost-audit --list                            # the 18 criteria, no bill needed
+
+# or install it
+npm i -g llm-cost-audit
+
+# or work from a clone
 git clone https://github.com/lapisli/llm-cost-audit.git
 cd llm-cost-audit
 

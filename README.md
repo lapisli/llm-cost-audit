@@ -97,7 +97,7 @@ LLM 成本审计结果
 
 ### 一行体验（不用 clone）
 
-> ⚠️ **npm 包尚未发布。** 当前请用下面的「完整用法」；发布后这两条命令才生效。
+已发布到 npm：[`llm-cost-audit`](https://www.npmjs.com/package/llm-cost-audit)
 
 ```bash
 npx llm-cost-audit --list
