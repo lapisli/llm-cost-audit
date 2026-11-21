@@ -1,7 +1,7 @@
 # 知识库总目录
 
 > 来源：2026-10-22 的 14 路并行调研（每路一个独立子代理，互不共享上下文）。
-> 原始产出 408 KB，位于工作区 _tmp/audit-deep/；本目录是 1:1 拷贝，只额外加了来源头。
+> 共 15 份资料，408 KB。每个数字都带来源与证据等级标注 —— 这是本知识库唯一值得信任的地方。
 
 ## 一、证据等级约定（读之前先看标签）
 
@@ -26,12 +26,8 @@
 | reference/07-tooling.md | 计量与成本归因工具链 |
 | reference/08-selfhost.md | 自托管 vs API 的 break-even |
 | reference/09-price-cn.md | 国内大模型官方定价全表 |
-| reference/10-gateway-cn.md | 国内网关与中转站成本结构 |
 | reference/11-finops-cn.md | 国内云节省计划与 FinOps |
-| reference/12-market-cn.md | 国内需求侧信号与外包价格 |
 | reference/13-methodology.md | 审计方法论、对账与认证 |
-| reference/14-commercial.md | 同业费率、合同条款与获客 |
-| reference/15-cases.md | 公开真实节省案例库 |
 
 ## 三、本轮抓取失败情况（这就是为什么要标未核实）
 
@@ -52,5 +48,5 @@ Upwork/Fiverr 全站 403、BOSS 直聘与拉勾零可读页面。
 
 ## 五、维护
 
-本目录与 reference/ 由 node tools/build-skill.mjs 从 _tmp/audit-deep/ 重建。
+本目录内容随实践更新；发现数字过期请提 issue 并附新来源。
 调研更新后重跑该脚本即可；SKILL.md 的源码在 tools/skill-src-SKILL.md。

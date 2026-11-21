@@ -1,0 +1,55 @@
+{
+  "name": "llm-cost-audit",
+  "version": "2.0.0",
+  "description": "把 LLM 账单跑成一张可复核的浪费清单 —— 18 项判据，出金额，出证据等级，并明确告诉你哪些不建议做。",
+  "type": "module",
+  "license": "MIT",
+  "author": "lapisli",
+  "keywords": [
+    "llm",
+    "cost",
+    "finops",
+    "token",
+    "audit",
+    "ai",
+    "agent-skill",
+    "claude-skill",
+    "prompt-caching",
+    "model-routing"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "llm-cost-estimate": "scripts/estimate.mjs",
+    "llm-cost-ingest": "scripts/ingest.mjs"
+  },
+  "exports": {
+    ".": "./lib/estimate.mjs",
+    "./matrix": "./lib/matrix.mjs",
+    "./prices": "./lib/prices.mjs"
+  },
+  "files": [
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "lib/",
+    "scripts/",
+    "reference/",
+    "templates/",
+    "examples/"
+  ],
+  "scripts": {
+    "test": "node --test tests/estimate.test.mjs",
+    "demo": "node scripts/estimate.mjs examples/sample-bill.json",
+    "list": "node scripts/estimate.mjs --list"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lapisli/llm-cost-audit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lapisli/llm-cost-audit/issues"
+  },
+  "homepage": "https://github.com/lapisli/llm-cost-audit#readme"
+}

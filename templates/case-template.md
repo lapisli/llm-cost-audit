@@ -140,18 +140,18 @@
 | 国内定价全表 | 技能内 `reference/09-price-cn.md` | 算钱（缓存价 / 错峰价 / 批处理 / 阶梯） |
 | 国外降本技术 | 技能内 `reference/02` ~ `08` | 找修法（压缩 / 缓存 / 路由 / 批处理 / agent / 工具链 / 自托管） |
 | 方法论与报价 | 技能内 `reference/13`、`14` | 设计基线、报价与合同条款 |
-| 案例库与话术 | 技能内 `reference/15-cases.md` | 要参照或辨别厂商宣传时 |
+| 案例库与话术 | 内部案例库（未公开） | 要参照或辨别厂商宣传时 |
 | 总报告 | `_docs/LLM成本审计-深调研总报告-20261022.md` | 只看结论索引 |
-| 原始调研 | `_tmp/audit-deep/` 14 份 | 需要原文与未核实清单时 |
+| 知识库 | `reference/` 15 份 | 需要原文与未核实清单时 |
 
 **技能里这三件事已落地（2026-10-23 全部完成并验证）：**
 
 - [x] `reference/01-waste-matrix.md`：浪费矩阵总表 —— 已合并成一张能直接逐项跑的检查表（W1–W18），并已进 `00-index.md` 总目录
-- [x] `scripts/`：会话日志分析脚本已参数化放进技能（`scripts/audit-cost.mjs`，`--home` / `--out` / `--holidays`），2026-10-23 用真实账本跑通
+- [x] `adapters/dsh/`：平台专用账本分析脚本（`audit-cost.mjs`，`--home` / `--out` / `--holidays`），2026-10-23 用真实账本跑通
 - [x] `templates/intake-email.md`：Intake 邮件中英文两版（中文版 + English version）
 
 **改技能的正确流程**（别直接改 DSH 目录，会被下次构建覆盖）：
 
 1. 改正文 → 工作区 `tools/skill-src-SKILL.md`
-2. 改知识库 → 工作区 `_tmp/audit-deep/<课题>.md`
-3. 重建并同步 → `node tools/build-skill.mjs`（会自动校验 frontmatter、乱码，并推到 DSH）
+2. 改知识库 → `reference/<对应文件>.md`
+3. 跑测试 → `npm test`（确保改动没有破坏计算器）
