@@ -1,0 +1,40 @@
+{
+  "_comment": "示例账单 —— 数据来自 2026-10-22 本机自审实测（reference/01-waste-matrix.md 引用的同一批数字）。可直接用来自测 estimate.mjs。",
+  "meta": {
+    "currency": "CNY",
+    "period": "2026-10",
+    "source": "本机自审账本（程序写入，非厂商口径）",
+    "evidence": "第三方实测"
+  },
+  "models": {
+    "deepseek-flash": {
+      "inputCachedTokens": 1970990000,
+      "inputUncachedTokens": 65220000,
+      "outputTokens": 14200000,
+      "requestCount": 11503,
+      "peak": false,
+      "retryCount": 476,
+      "retryBreakdown": {
+        "quotaExceeded429": 380,
+        "other": 96
+      }
+    }
+  },
+  "totalCost": 751.5,
+  "assumptions": {
+    "contextTrimRatio": 0.086,
+    "offlineCostShare": 0.0,
+    "batchDiscount": 0.5,
+    "untaggedCostRatio": 0.0,
+    "hiddenCallCount": 3956,
+    "hiddenCallUnitPrice": 0.005,
+    "preambleChars": 11545,
+    "callsPerTask": 42,
+    "customerDupRate": null,
+    "gpuHourlyPrice": null,
+    "utilization": null,
+    "tagCoverage": 0.0,
+    "peakTokenRatio": 0.181,
+    "shadowEval": null
+  }
+}
