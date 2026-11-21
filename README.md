@@ -1,3 +1,5 @@
+**中文** | [English](README.en.md)
+
 # llm-cost-audit
 
 **把 LLM 账单跑成一张可复核的浪费清单 —— 18 项判据，出金额，出证据等级，并且明确告诉你哪些不建议做。**
@@ -237,9 +239,9 @@ cp -r llm-cost-audit .claude/skills/                      # 项目内（Claude C
 node scripts/verify.mjs
 ```
 
-它会检查六件真会出问题的事：frontmatter 是否合规、`name` 与目录名是否一致、
+它跑 11 项检查，全是真会出问题的事：frontmatter 合规性、`name` 与目录名是否一致、
 SKILL.md 引用的文件是否都在、所有 `.mjs` 语法、`bin` 是否指向真实文件、
-以及**私有目录有没有被误提交**。同时打印各客户端的安装路径。
+矩阵引用的文档是否存在、**私有目录有没有被误提交**。同时打印各客户端的安装路径。
 
 ---
 
@@ -256,7 +258,7 @@ llm-cost-audit/
 │   ├── render-html.mjs   自包含 HTML 报告
 │   └── compare.mjs       两期账单对比
 ├── scripts/
-│   ├── estimate.mjs      CLI（text / json / md）
+│   ├── estimate.mjs      CLI（text / json / md / html）
 │   ├── ingest.mjs        四路账单适配 CLI
 │   ├── compare.mjs       两期对比 CLI
 │   ├── verify.mjs        分发自检（装完跑这个）
@@ -359,15 +361,14 @@ node scripts/compare.mjs before.json after.json
 
 ## 已知局限
 
-- **不做流式解析**。10 万行 0.2 秒够用，百万行会吃内存。超大账单先在数据库聚合。
-
 诚实列出来，避免你踩坑：
 
-1. **价格表需要维护。** 收录了 DeepSeek 官方价与几个 Claude 模型；其他厂商请用「账单内联价格」，或自行补 `lib/prices.mjs` 并注明抓取时间。
-2. **需要账单数据才能算钱。** 只有用量没有金额时，能算百分比但算不出绝对金额。
-3. **W3 的「可裁剪比例」必须来自你自己的 A/B 实测。** 工具不会替你假设一个压缩比。
-4. **它不连任何 API。** 纯本地跑，不读你的密钥，不联网。
-5. **`realizedTotal` 永远是 `null`，除非你手动填入 A/B 复测结果。** 这是设计，不是缺陷。
+1. **不做流式解析。** 10 万行 0.2 秒够用，百万行会吃内存（1 GB 左右）。超大账单先在数据库按 model 聚合再导出。
+2. **价格表需要维护。** 收录了 DeepSeek 官方价与几个 Claude 模型；其他厂商请用「账单内联价格」，或自行补 `lib/prices.mjs` 并注明抓取时间。
+3. **需要账单数据才能算钱。** 只有用量没有金额时，能算百分比但算不出绝对金额。
+4. **W3 的「可裁剪比例」必须来自你自己的 A/B 实测。** 工具不会替你假设一个压缩比。
+5. **它不连任何 API。** 纯本地跑，不读你的密钥，不联网。
+6. **`realizedTotal` 永远是 `null`，除非你手动填入 A/B 复测结果。** 这是设计，不是缺陷。
 
 ---
 
