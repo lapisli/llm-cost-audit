@@ -40,7 +40,7 @@
     "examples/"
   ],
   "scripts": {
-    "test": "node --test tests/estimate.test.mjs",
+    "test": "node --test tests/estimate.test.mjs tests/ingest.test.mjs",
     "verify": "node scripts/verify.mjs",
     "demo": "node scripts/estimate.mjs examples/sample-bill.json",
     "list": "node scripts/estimate.mjs --list"
