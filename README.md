@@ -80,7 +80,7 @@ LLM 成本审计结果
 需要 Node.js 18+，无第三方依赖。
 
 ```bash
-git clone https://github.com/<your-name>/llm-cost-audit.git
+git clone https://github.com/lapisli/llm-cost-audit.git
 cd llm-cost-audit
 
 # 看 18 项矩阵长什么样（不需要账单）
@@ -180,7 +180,7 @@ output_tokens=outputTokens,requests=requestCount,cost=totalCost --out bill.json
 
 ```bash
 # 一条命令全装（推荐）
-npx skills add <your-name>/llm-cost-audit --all
+npx skills add lapisli/llm-cost-audit --all
 
 # 或手动复制
 cp -r llm-cost-audit ~/.claude/skills/                    # Claude Code
