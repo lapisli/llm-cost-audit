@@ -27,6 +27,7 @@ import path from 'node:path';
 const UNIFIED_FIELDS = [
   'inputCachedTokens',
   'inputUncachedTokens',
+  'inputTotalTokens',
   'outputTokens',
   'requestCount',
   'totalCost',
@@ -257,19 +258,29 @@ function adaptGeneric(input, opts) {
     };
     const cached = get('inputCachedTokens');
     const uncached = get('inputUncachedTokens');
+    const totalIn = get('inputTotalTokens');
     const out = get('outputTokens');
     const reqs = get('requestCount');
     const cost = get('totalCost');
 
     if (cached !== null) b.inputCachedTokens += cached;
+    // 优先用显式未命中数；否则用「总输入 − 缓存命中」推算
+    // 这一步不能省：多数导出给的 input_tokens 含缓存命中部分，直接当未命中会高估成本
     if (uncached !== null) b.inputUncachedTokens += uncached;
+    else if (totalIn !== null) b.inputUncachedTokens += Math.max(0, totalIn - (cached ?? 0));
     if (out !== null) b.outputTokens += out;
     if (reqs !== null) b.requestCount += reqs;
     if (cost !== null) totalCost = (totalCost || 0) + cost;
     buckets.set(model, b);
   }
 
-  const unmapped = UNIFIED_FIELDS.filter((f) => !Object.values(map).includes(f));
+  // 能被推算出来的字段不算缺失：给了「总输入 + 缓存命中」就能算出未命中
+  const mapped = new Set(Object.values(map));
+  const derived = new Set();
+  if (mapped.has('inputTotalTokens') && mapped.has('inputCachedTokens')) {
+    derived.add('inputUncachedTokens');
+  }
+  const unmapped = UNIFIED_FIELDS.filter((f) => !mapped.has(f) && !derived.has(f));
   if (unmapped.length) warnings.push(`这些统一字段没有映射来源：${unmapped.join('、')}（对应项会判待核实）`);
 
   return { models: Object.fromEntries(buckets), warnings, totalCost, currency: opts.currency || 'CNY' };

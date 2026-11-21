@@ -100,10 +100,17 @@ node scripts/ingest.mjs usage.json  --from openai     --out bill.json
 node scripts/ingest.mjs usage.json  --from anthropic  --out bill.json
 node scripts/ingest.mjs logs.jsonl  --from litellm    --out bill.json
 node scripts/ingest.mjs data.csv    --from generic \
-  --map model=model,input_tokens=inputUncachedTokens,output_tokens=outputTokens --out bill.json
+  --map model=model,input_tokens=inputTotalTokens,cached_tokens=inputCachedTokens,\
+output_tokens=outputTokens,requests=requestCount,cost=totalCost --out bill.json
 ```
 
 认不出的字段会写进 `warnings`，**不会猜一个值填进去**。
+
+关于 `inputTotalTokens`：多数导出的 `input_tokens` **包含**缓存命中部分。
+映射成 `inputTotalTokens` 后，适配器会自动减掉 `cached_tokens` 得到真实未命中量；
+如果直接映射成 `inputUncachedTokens`，就会把缓存命中的 token 按未命中价重复计费。
+
+`examples/usage.csv` 是一个可直接跑的样例。
 
 ### 账单里自带价格（推荐）
 

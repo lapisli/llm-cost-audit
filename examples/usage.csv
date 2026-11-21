@@ -1,0 +1,4 @@
+model,input_tokens,cached_tokens,output_tokens,requests,cost
+deepseek-flash,5000000,4800000,120000,3000,18.40
+deepseek-flash,3000000,2900000,90000,2000,11.20
+deepseek-v4-pro,800000,750000,60000,150,26.30

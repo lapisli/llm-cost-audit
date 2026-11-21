@@ -18,6 +18,9 @@ version: 2.0.0
 
 ## 快速开始
 
+> 以下命令都在**技能根目录**执行（安装后即 `~/.claude/skills/llm-cost-audit/`、
+> `~/.codex/skills/llm-cost-audit/` 或仓库根目录）。脚本用相对路径找 `lib/`，换目录会找不到。
+
 ```bash
 # 1. 把你的账单/用量导出归一化（支持 OpenAI / Anthropic / LiteLLM / 自定义 CSV）
 node scripts/ingest.mjs usage.json --from openai --out bill.json
