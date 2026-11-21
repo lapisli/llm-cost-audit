@@ -165,19 +165,32 @@ output_tokens=outputTokens,requests=requestCount,cost=totalCost --out bill.json
 
 ## 安装为 Agent Skill
 
-这个项目同时是一个 **Agent Skill**，可以装进支持 skills 的客户端：
+这个项目同时是一个 **Agent Skill**，可以装进支持 skills 规范的客户端：
 
 ```bash
-# 通用安装（自动识别客户端）
-npx skills add <your-name>/llm-cost-audit
+# 一条命令全装（推荐）
+npx skills add <your-name>/llm-cost-audit --all
 
-# 手动安装
-# Claude Code:  cp -r llm-cost-audit ~/.claude/skills/
-# Codex:        cp -r llm-cost-audit ~/.codex/skills/
-# Cursor:       cp -r llm-cost-audit .cursor/skills/
+# 或手动复制
+cp -r llm-cost-audit ~/.claude/skills/                    # Claude Code
+cp -r llm-cost-audit ~/.codex/skills/                     # Codex
+cp -r llm-cost-audit ~/.cursor/skills/                    # Cursor
+cp -r llm-cost-audit ~/.config/opencode/skills/           # OpenCode
+cp -r llm-cost-audit .agents/skills/                      # 项目内（Codex/Cursor/OpenCode 通用）
+cp -r llm-cost-audit .claude/skills/                      # 项目内（Claude Code）
 ```
 
 装好后，AI 助手在你说「帮我看看这个月 LLM 花了多少钱 / 出个成本审计报告」时会自动加载这套流程。
+
+### 装完先自检
+
+```bash
+node scripts/verify.mjs
+```
+
+它会检查六件真会出问题的事：frontmatter 是否合规、`name` 与目录名是否一致、
+SKILL.md 引用的文件是否都在、所有 `.mjs` 语法、`bin` 是否指向真实文件、
+以及**私有目录有没有被误提交**。同时打印各客户端的安装路径。
 
 ---
 
@@ -192,13 +205,16 @@ llm-cost-audit/
 │   └── estimate.mjs      计算器核心
 ├── scripts/
 │   ├── estimate.mjs      CLI（text / json / md）
-│   └── ingest.mjs        四路账单适配
+│   ├── ingest.mjs        四路账单适配
+│   └── verify.mjs        分发自检（装完跑这个）
 ├── tests/
 │   └── estimate.test.mjs 26 项单测
-├── reference/            15 份带来源的知识库
+├── reference/            12 份带来源的知识库
 ├── templates/            报告模板 / Intake 邮件 / 结案模板
+├── adapters/dsh/         某个平台的账本适配（参考实现，非通用）
 └── examples/
-    └── sample-bill.json  可直接跑的示例账单
+    ├── sample-bill.json  可直接跑的示例账单
+    └── usage.csv         CSV 适配示例
 ```
 
 ---
