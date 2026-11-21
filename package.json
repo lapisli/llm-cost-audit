@@ -1,7 +1,7 @@
 {
   "name": "llm-cost-audit",
   "version": "2.1.0",
-  "description": "把 LLM 账单跑成一张可复核的浪费清单 —— 18 项判据，出金额，出证据等级，并明确告诉你哪些不建议做。",
+  "description": "LLM 成本审计工具。输入账单，输出浪费清单和可省金额。",
   "type": "module",
   "license": "MIT",
   "author": {

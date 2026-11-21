@@ -2,7 +2,9 @@
 
 # llm-cost-audit
 
-**Turn your LLM bill into a checkable waste report — 18 criteria, real numbers, evidence grades, and an explicit list of what *not* to do.**
+**An LLM cost audit tool. Feed it a bill, get a waste report and the money you can save.**
+
+18 criteria cover caching, routing, context size and batching. Every figure carries an evidence source, and the items that aren't worth doing are listed separately — a report that only says "you can save here" has no credibility.
 
 [![CI](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml/badge.svg)](https://github.com/lapisli/llm-cost-audit/actions/workflows/ci.yml)
 [![tests](https://img.shields.io/badge/tests-97%20passing-brightgreen)]()
