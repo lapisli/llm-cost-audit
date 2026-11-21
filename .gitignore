@@ -1,0 +1,30 @@
+# 依赖
+node_modules/
+package-lock.json
+
+# 临时文件
+_tmp/
+*.log
+*.tmp
+*.bak
+*.bak-*
+
+# 凭据（严禁提交）
+.env
+.env.*
+.credentials*
+*credentials*.yaml
+*.key
+*.pem
+*.p12
+secrets/
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 客户数据（隐私）
+private/
+clients/
+*.client.json
