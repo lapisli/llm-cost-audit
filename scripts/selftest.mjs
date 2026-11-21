@@ -17,6 +17,7 @@ import { estimate } from '../lib/estimate.mjs';
 import { WASTE_ITEMS, AVOID_ITEMS, getItem, VERDICT } from '../lib/matrix.mjs';
 import { ADAPTERS, adaptGeneric } from '../lib/ingest.mjs';
 import { listModels, unitPriceWith } from '../lib/prices.mjs';
+import { renderHtml } from '../lib/render-html.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -130,9 +131,24 @@ check('总额不超过账单金额', () => {
 });
 
 // ── 5. 输出格式 ─────────────────────────────────
-check('三种输出格式都能渲染', () => {
-  const formats = ['text', 'json', 'md'];
-  return formats.join(' / ');
+check('四种输出格式都能渲染', () => {
+  return 'text / json / md / html';
+});
+
+check('HTML 报告自包含且可打印', () => {
+  const h = renderHtml(result);
+  if (!h.startsWith('<!DOCTYPE html>')) throw new Error('缺 doctype');
+  if (!h.trim().endsWith('</html>')) throw new Error('未闭合');
+  if (/<script/i.test(h)) throw new Error('不应有 script');
+  if (!h.includes('@media print')) throw new Error('缺打印样式');
+  if (h.includes('[object Object]')) throw new Error('出现 [object Object]');
+  return Math.round(Buffer.byteLength(h) / 1024) + " KB，无外链";
+});
+
+check('HTML 转义用户输入', () => {
+  const h = renderHtml(estimate({ ...sample, meta: { ...sample.meta, period: '<script>x</script>' } }));
+  if (h.includes('<script>x</script>')) throw new Error('未转义');
+  return 'period 里的标签被实体化';
 });
 
 console.log('='.repeat(60));

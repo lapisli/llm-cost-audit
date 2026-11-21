@@ -16,6 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { estimate } from '../lib/estimate.mjs';
+import { renderHtml } from '../lib/render-html.mjs';
 import { WASTE_ITEMS, EVIDENCE, VERDICT } from '../lib/matrix.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -188,7 +189,7 @@ function main() {
 
   const billPath = args._[0];
   if (!billPath) {
-    console.error('用法：node scripts/estimate.mjs <bill.json> [--format text|json|md] [--out file]');
+    console.error('用法：node scripts/estimate.mjs <bill.json> [--format text|json|md|html] [--out file]');
     console.error('      node scripts/estimate.mjs --list');
     process.exit(2);
   }
@@ -212,6 +213,7 @@ function main() {
   let output;
   if (args.format === 'json') output = JSON.stringify(result, null, 2);
   else if (args.format === 'md') output = renderMd(result);
+  else if (args.format === 'html') output = renderHtml(result, { client: args.client });
   else output = renderText(result);
 
   if (args.out) {
